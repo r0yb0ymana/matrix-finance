@@ -1,26 +1,75 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 255 255 255;
+    --foreground: 17 24 39;
+  }
+
+  html {
+    font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-accent-100 text-gray-900;
+  }
+
+  /* Focus visible for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-400 ring-offset-2;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Form container */
+  .form-container {
+    @apply mx-auto max-w-lg rounded-card bg-white p-6 shadow-card;
+  }
+
+  /* Section header */
+  .section-header {
+    @apply mb-6 border-b border-gray-200 pb-4;
+  }
+
+  /* Info panel (like Document Requirements) */
+  .info-panel {
+    @apply rounded-card border-l-4 border-primary-500 bg-accent-100 p-4;
+  }
+
+  /* Screen container for app layout */
+  .screen-container {
+    @apply min-h-screen bg-accent-100;
+  }
+
+  /* App header */
+  .app-header {
+    @apply sticky top-0 z-50 border-b border-gray-200 bg-white;
+  }
+
+  /* Navigation styles */
+  .nav-link {
+    @apply text-sm font-medium text-gray-600 hover:text-primary-900 transition-colors;
+  }
+  
+  .nav-link-active {
+    @apply text-primary-900 font-semibold;
+  }
+}
+
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation utilities */
+  .animate-in {
+    animation: fadeIn 0.2s ease-out;
+  }
 }
