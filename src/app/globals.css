@@ -11,54 +11,84 @@
   }
 
   html {
-    font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-poppins), system-ui, sans-serif;
+  }
+
   body {
-    @apply bg-accent-100 text-gray-900;
+    background-color: #F5F8FC;
+    color: #111827;
   }
 
   /* Focus visible for accessibility */
   *:focus-visible {
-    @apply outline-none ring-2 ring-primary-400 ring-offset-2;
+    outline: none;
+    ring: 2px solid #5B6FA8;
+    ring-offset: 2px;
   }
 }
 
 @layer components {
   /* Form container */
   .form-container {
-    @apply mx-auto max-w-lg rounded-card bg-white p-6 shadow-card;
+    max-width: 32rem;
+    margin: 0 auto;
+    border-radius: 0.75rem;
+    background-color: white;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgb(30 44 94 / 0.1), 0 1px 2px -1px rgb(30 44 94 / 0.1);
   }
 
   /* Section header */
   .section-header {
-    @apply mb-6 border-b border-gray-200 pb-4;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 1rem;
   }
 
   /* Info panel (like Document Requirements) */
   .info-panel {
-    @apply rounded-card border-l-4 border-primary-500 bg-accent-100 p-4;
+    border-radius: 0.75rem;
+    border-left: 4px solid #3E5699;
+    background-color: #F5F8FC;
+    padding: 1rem;
   }
 
   /* Screen container for app layout */
   .screen-container {
-    @apply min-h-screen bg-accent-100;
+    min-height: 100vh;
+    background-color: #F5F8FC;
   }
 
   /* App header */
   .app-header {
-    @apply sticky top-0 z-50 border-b border-gray-200 bg-white;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid #E5E7EB;
+    background-color: white;
   }
 
   /* Navigation styles */
   .nav-link {
-    @apply text-sm font-medium text-gray-600 hover:text-primary-900 transition-colors;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4B5563;
+    transition: color 0.2s;
   }
-  
+
+  .nav-link:hover {
+    color: #1E2C5E;
+  }
+
   .nav-link-active {
-    @apply text-primary-900 font-semibold;
+    color: #1E2C5E;
+    font-weight: 600;
   }
 }
 
@@ -72,4 +102,10 @@
   .animate-in {
     animation: fadeIn 0.2s ease-out;
   }
+}
+
+/* Spin animation for loading */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

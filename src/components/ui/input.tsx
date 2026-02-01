@@ -8,41 +8,65 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, error, hint, id, ...props }, ref) => {
+  ({ className, type, label, error, hint, id, style, ...props }, ref) => {
     const inputId = id || React.useId();
     
+    const labelStyle: React.CSSProperties = {
+      marginBottom: '0.375rem',
+      display: 'block',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      color: '#374151',
+    };
+
+    const inputStyle: React.CSSProperties = {
+      display: 'flex',
+      height: '2.75rem',
+      width: '100%',
+      maxWidth: '100%',
+      boxSizing: 'border-box',
+      borderRadius: '0.375rem',
+      border: error ? '1px solid #EF4444' : '1px solid #D1D5DB',
+      backgroundColor: 'white',
+      padding: '0.5rem 1rem',
+      fontSize: '1rem',
+      transition: 'border-color 0.2s, box-shadow 0.2s',
+      outline: 'none',
+      ...style,
+    };
+
+    const errorStyle: React.CSSProperties = {
+      marginTop: '0.375rem',
+      fontSize: '0.875rem',
+      color: '#EF4444',
+    };
+
+    const hintStyle: React.CSSProperties = {
+      marginTop: '0.375rem',
+      fontSize: '0.875rem',
+      color: '#6B7280',
+    };
+    
     return (
-      <div className="w-full">
+      <div style={{ width: '100%' }}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="mb-1.5 block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor={inputId} style={labelStyle}>
             {label}
-            {props.required && <span className="ml-0.5 text-error">*</span>}
           </label>
         )}
         <input
           type={type}
           id={inputId}
-          className={cn(
-            "flex h-11 w-full rounded-input border bg-white px-4 py-2 text-base transition-colors",
-            "placeholder:text-gray-400",
-            "focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-500",
-            "disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-50",
-            error
-              ? "border-error focus:ring-error/30"
-              : "border-gray-300 hover:border-gray-400",
-            className
-          )}
+          className={cn(className)}
           ref={ref}
+          style={inputStyle}
           {...props}
         />
         {error && (
-          <p className="mt-1.5 text-sm text-error">{error}</p>
+          <p style={errorStyle}>{error}</p>
         )}
         {hint && !error && (
-          <p className="mt-1.5 text-sm text-gray-500">{hint}</p>
+          <p style={hintStyle}>{hint}</p>
         )}
       </div>
     );

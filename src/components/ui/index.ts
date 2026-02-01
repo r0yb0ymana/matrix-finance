@@ -4,3 +4,6 @@ export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
 export { ProgressSteps, StepIndicator } from "./progress-steps";
 export { Checkbox } from "./checkbox";
 export { FileUpload } from "./file-upload";
+export { OTPInput, OTPInputField } from "./otp-input";
+export { Slider } from "./slider";
+export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem, SelectSeparator } from "./select";

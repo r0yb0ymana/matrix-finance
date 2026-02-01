@@ -10,22 +10,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Primary - Navy
-        primary: {
-          DEFAULT: '#1E2C5E',
-          50: '#E8EBF3',
-          100: '#C5CCE0',
-          200: '#9FAACC',
-          300: '#7888B8',
-          400: '#5B6FA8',
-          500: '#3E5699',
-          600: '#374E91',
-          700: '#2F4386',
-          800: '#27397C',
-          900: '#1E2C5E',
-          950: '#111A3A',
+        // Brand - Matrix Blue (from Figma screenshots - logo blue)
+        brand: {
+          navy: '#2B5F8C',      // Primary brand blue (from logo)
+          'navy-dark': '#234D73',   // Hover/active states
+          'navy-light': '#3A7AB0',  // Lighter variant
+          black: '#000000',     // MATRIX wordmark
         },
-        // Accent - Light Blue
+        // Primary - Blue scale
+        primary: {
+          DEFAULT: '#2B5F8C',
+          50: '#EBF2F7',
+          100: '#D1E3ED',
+          200: '#A8C9DC',
+          300: '#7EAFCA',
+          400: '#5595B9',
+          500: '#2B7BA7',
+          600: '#2B5F8C',
+          700: '#234D73',
+          800: '#1C3B5A',
+          900: '#142941',
+          950: '#0D1A29',
+        },
+        // Accent - Light Blue (from Figma)
         accent: {
           DEFAULT: '#F5F8FC',
           50: '#FFFFFF',
@@ -58,8 +65,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
-        display: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         'button': '0.5rem',  // 8px - for buttons

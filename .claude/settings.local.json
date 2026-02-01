@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 3 tail:*)",
+      "Bash(taskkill:*)",
+      "Bash(next dev:*)",
+      "Bash(npm install:*)",
+      "Bash(grep -n \"Step.*of.*:\" src/app/application/*/page.tsx)",
+      "Bash(psql:*)",
+      "Bash(npm run db:migrate:*)",
+      "Bash(pg_isready:*)",
+      "Bash(createdb:*)",
+      "Bash(npm run db:setup:*)",
+      "Bash(node scripts/db-test.mjs:*)",
+      "Bash(node scripts/db-quick-test.mjs:*)",
+      "Bash(node scripts/db-complete-setup.mjs:*)",
+      "Bash(where:*)",
+      "Bash(powershell:*)",
+      "Bash(net start:*)",
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(timeout:*)",
+      "Bash(git reset:*)"
+    ]
+  }
+}
