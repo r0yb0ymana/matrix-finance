@@ -150,7 +150,7 @@ export function PV(
     presentValue = presentValue * (1 + rate);
   }
 
-  return -presentValue;
+  return presentValue;
 }
 
 // =====================================================

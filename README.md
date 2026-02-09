@@ -12,7 +12,7 @@ Matrix Equipment Finance provides a streamlined digital application process for 
 - 🏢 **Multi-Entity Support** - Sole Trader, Company, Trust (Individual & Company Trustee), Partnership
 - 🔍 **ABN Verification** - Automatic business lookup and data pre-fill via Australian Business Register
 - ✍️ **E-Signatures** - Integrated Dropbox Sign (HelloSign) for document signing
-- 📄 **Document Management** - AWS S3 storage for bank statements, ID documents, and contracts
+- 📄 **Document Management** - Cloudflare R2 storage for bank statements, ID documents, and contracts
 - 🔄 **CRM Integration** - Bi-directional sync with Findesk CRM
 - 🛡️ **Secure Authentication** - Magic link + OTP email verification (no passwords)
 
@@ -22,8 +22,8 @@ Matrix Equipment Finance provides a streamlined digital application process for 
 - **Database:** PostgreSQL 14+
 - **Styling:** Tailwind CSS 4 with custom design tokens
 - **UI Components:** Radix UI primitives
-- **Hosting:** Vercel or Railway (recommended)
-- **Storage:** AWS S3 (Sydney region)
+- **Hosting:** Railway
+- **Storage:** Cloudflare R2
 
 ## 📁 Project Structure
 
@@ -242,6 +242,50 @@ Key variables:
 - [ ] Trust Individual flow (12 screens, up to 4 trustees)
 - [ ] Trust Company flow (18 screens, 2 ABN lookups)
 
+## 📋 Complete Sole Trader Workflow
+
+### Authentication
+- `/login` - Email + OTP verification
+
+### Application Steps (8 total)
+
+**Step 1: Product Selection**
+- `/application/product-selection`
+
+**Step 2: Business Lookup**
+- `/application/business-lookup` (ABN entry)
+
+**Step 3: Business Confirmation & Trading Info**
+- `/application/business-confirmation` (Review ABN data)
+- `/application/trading-information` (First trading info screen)
+- `/application/business-details` (Second business details screen)
+
+**Step 4: Personal Information**
+- `/application/applicant-details`
+
+**Step 5: Financial Position - Assets**
+- `/application/financial-position-assets`
+
+**Step 6: Financial Position - Liabilities**
+- `/application/financial-position-liabilities`
+
+**Step 7: Identity Documents**
+- `/application/documents`
+
+**Step 8: Business Documents**
+- `/application/business-documents`
+
+### Final Steps
+- `/application/review` - Review all information
+- `/application/sign` - E-signature
+- `/application/success` or `/application/submitted` - Confirmation
+
+### Key Data Flow
+- `ApplicationContext` stores state across all screens
+- Each screen validates and saves data before continuing
+- `markStepComplete()` tracks progress
+- Guards redirect if required data missing
+
 ## 🔐 Security
 
 - **Authentication:** Magic link + OTP (no passwords)
@@ -252,13 +296,59 @@ Key variables:
 
 ## 📚 External Integrations
 
-| Service | Purpose | Status |
-|---------|---------|--------|
-| ABN Lookup API | Business verification | Setup required |
-| Dropbox Sign (HelloSign) | E-signatures | Account available |
-| Findesk CRM | Application management | Account available |
-| bankstatements.com.au | Open Banking | Setup required |
-| AWS S3 | Document storage | Setup required |
+### Required APIs for Sole Trader Application
+
+| API | Purpose | Status | Required? |
+|-----|---------|--------|-----------|
+| **ABN Lookup API** | Business verification + ASIC number | ✅ GUID configured | ✅ Required |
+| **Resend** | Send emails (magic links, OTP) | ✅ API key configured | ✅ Required |
+| **Dropbox Sign** | E-signatures for contracts | ✅ API key configured | ✅ Required |
+| **Cloudflare R2** | Document storage (ID, bank statements) | ✅ API key configured | ✅ Required |
+| **bankstatements.com.au** | Manual bank statement retrieval link | ✅ Integrated | ✅ Required |
+| **Findesk CRM** | Backend CRM sync | ✅ API credentials configured | ✅ Required |
+
+### Integration Details
+
+**ABN Lookup API**
+- Provider: Australian Business Register (ABR)
+- Endpoint: `https://abr.business.gov.au/abrxmlsearch/AbrXmlSearch.asmx`
+- Environment: `ABN_LOOKUP_GUID`
+- Register: https://abr.business.gov.au/Tools/WebServices
+- Used in: Step 2 - Business Lookup
+
+**Resend** (Email Service)
+- Provider: Resend
+- Endpoint: `https://api.resend.com/emails`
+- Environment: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
+- Register: https://resend.com
+- Used in: Authentication (magic links, OTP codes)
+
+**Dropbox Sign** (E-Signatures)
+- Provider: Dropbox Sign (formerly HelloSign)
+- Environment: `DROPBOX_SIGN_API_KEY`
+- Register: https://sign.dropbox.com
+- Used in: Step 8 - Review & Sign
+
+**Cloudflare R2** (Document Storage)
+- Provider: Cloudflare
+- Environment: `CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
+- Cost: FREE (10GB included), $0 egress fees
+- Used in: Steps 6 & 7 - Document uploads
+
+**bankstatements.com.au** (Open Banking)
+- Provider: bankstatements.com.au
+- Purpose: Automated bank statement retrieval
+- Environment: `BANKSTATEMENTS_API_KEY`
+- Endpoints: `/api/bankstatements/connect`, `/api/bankstatements/fetch`
+- Status: ✅ Code built, needs API key
+
+**Findesk CRM**
+- Provider: Findesk
+- Base URL: `https://app.findesk.com.au/api/v1`
+- Environment: `FINDESK_BEARER_TOKEN`, `FINDESK_ENTERPRISE_ID`
+- Endpoints: `/api/crm/sync`, `/api/crm/webhook`
+- Purpose: Bi-directional application sync
+- Status: ✅ Code built, needs API key
 
 ## 🤝 Contributing
 

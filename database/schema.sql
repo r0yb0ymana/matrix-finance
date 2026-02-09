@@ -21,6 +21,9 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Enable trigram extension (for text search indexes)
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
 -- =====================================================
 -- ENUMS
 -- =====================================================
@@ -127,10 +130,11 @@ CREATE TABLE otp_codes (
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   used_at TIMESTAMP WITH TIME ZONE,
   ip_address INET,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_otp_email_code (email, code),
-  INDEX idx_otp_expires (expires_at)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_otp_email_code ON otp_codes(email, code);
+CREATE INDEX idx_otp_expires ON otp_codes(expires_at);
 
 -- Magic link sessions
 CREATE TABLE magic_links (
@@ -141,10 +145,11 @@ CREATE TABLE magic_links (
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   used_at TIMESTAMP WITH TIME ZONE,
   ip_address INET,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_magic_token (token),
-  INDEX idx_magic_expires (expires_at)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_magic_token ON magic_links(token);
+CREATE INDEX idx_magic_expires ON magic_links(expires_at);
 
 -- Active sessions
 CREATE TABLE sessions (
@@ -157,10 +162,11 @@ CREATE TABLE sessions (
   last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   ip_address INET,
   user_agent TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_session_token (session_token),
-  INDEX idx_session_expires (expires_at)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_session_token ON sessions(session_token);
+CREATE INDEX idx_session_expires ON sessions(expires_at);
 
 -- =====================================================
 -- ADMIN CONFIGURATION
@@ -354,11 +360,11 @@ CREATE TABLE contacts (
   data_edited_from_prefill BOOLEAN DEFAULT false, -- Track if user edited pre-filled data
 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_contacts_application (application_id),
-  INDEX idx_contacts_role (role)
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_contacts_application ON contacts(application_id);
+CREATE INDEX idx_contacts_role ON contacts(role);
 
 -- =====================================================
 -- DOCUMENTS
@@ -394,12 +400,12 @@ CREATE TABLE documents (
   rejection_reason TEXT,
 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_documents_application (application_id),
-  INDEX idx_documents_type (document_type),
-  INDEX idx_documents_status (status)
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_documents_application ON documents(application_id);
+CREATE INDEX idx_documents_type ON documents(document_type);
+CREATE INDEX idx_documents_status ON documents(status);
 
 -- =====================================================
 -- E-SIGNATURES (Dropbox Sign Integration)
@@ -438,12 +444,12 @@ CREATE TABLE esign_requests (
   expired_at TIMESTAMP WITH TIME ZONE,
 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_esign_application (application_id),
-  INDEX idx_esign_request_id (signature_request_id),
-  INDEX idx_esign_status (status)
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_esign_application ON esign_requests(application_id);
+CREATE INDEX idx_esign_request_id ON esign_requests(signature_request_id);
+CREATE INDEX idx_esign_status ON esign_requests(status);
 
 -- =====================================================
 -- CRM SYNC (Findesk Integration)
@@ -472,12 +478,12 @@ CREATE TABLE crm_sync_log (
 
   -- Timestamps
   synced_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_crm_sync_application (application_id),
-  INDEX idx_crm_sync_status (status),
-  INDEX idx_crm_sync_retry (next_retry_at) WHERE status = 'retry'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_crm_sync_application ON crm_sync_log(application_id);
+CREATE INDEX idx_crm_sync_status ON crm_sync_log(status);
+CREATE INDEX idx_crm_sync_retry ON crm_sync_log(next_retry_at) WHERE status = 'retry';
 
 -- =====================================================
 -- CALCULATOR HISTORY (Optional - for analytics)
@@ -502,11 +508,11 @@ CREATE TABLE calculator_history (
 
   -- Metadata
   ip_address INET,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_calc_session (session_id),
-  INDEX idx_calc_application (application_id)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_calc_session ON calculator_history(session_id);
+CREATE INDEX idx_calc_application ON calculator_history(application_id);
 
 -- =====================================================
 -- AUDIT LOG
@@ -534,11 +540,11 @@ CREATE TABLE audit_log (
   ip_address INET,
   user_agent TEXT,
 
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-  INDEX idx_audit_table_record (table_name, record_id),
-  INDEX idx_audit_created (created_at)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_audit_table_record ON audit_log(table_name, record_id);
+CREATE INDEX idx_audit_created ON audit_log(created_at);
 
 -- =====================================================
 -- INDEXES FOR PERFORMANCE

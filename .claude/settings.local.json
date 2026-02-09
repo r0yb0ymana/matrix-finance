@@ -22,7 +22,18 @@
       "WebFetch(domain:localhost)",
       "WebFetch(domain:www.figma.com)",
       "Bash(timeout:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push)",
+      "Bash(docker-compose up:*)",
+      "Bash(test:*)",
+      "Bash(docker exec:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(docker run:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker rm:*)",
+      "Bash(curl.exe:*)"
     ]
   }
 }
