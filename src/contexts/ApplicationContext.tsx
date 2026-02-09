@@ -58,6 +58,14 @@ export interface ApplicationState {
   applicantLastName?: string;
   applicantDateOfBirth?: string;
   applicantDriversLicense?: string;
+  homeAddress?: {
+    line1: string;
+    line2?: string;
+    suburb: string;
+    state: string;
+    postcode: string;
+  };
+  residencyStatus?: string;
 
   // Step 5: Financial Position - Assets
   assets?: {
@@ -86,7 +94,13 @@ export interface ApplicationState {
     medicareCard?: string;
   };
 
-  // Step 8: E-Signature
+  // Step 8: Business Documents
+  businessDocuments?: {
+    bankStatements: string | null;
+    bankStatementLinkUsed: boolean;
+  };
+
+  // Step 9: E-Signature
   signatureRequestId?: string;
   signedAt?: string;
 

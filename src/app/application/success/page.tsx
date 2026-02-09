@@ -177,7 +177,7 @@ export default function SuccessPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={handleNewApplication} className="flex-1">
+              <Button variant="secondary" onClick={handleNewApplication} className="flex-1">
                 New Application
               </Button>
               <Button onClick={handleGoHome} className="flex-1">

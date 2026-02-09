@@ -44,7 +44,7 @@ export default function TradingInformationPage() {
   const [city, setCity] = useState(state.businessAddress?.suburb || "Sydney");
   const [stateValue, setStateValue] = useState(state.businessAddress?.state || "NSW");
   const [postcode, setPostcode] = useState(state.businessAddress?.postcode || "2000");
-  const [mobile, setMobile] = useState(state.mobile || "");
+  const [mobile, setMobile] = useState(state.applicantPhone || "");
   const [confirmed, setConfirmed] = useState(false);
 
   // Validation errors
@@ -90,7 +90,7 @@ export default function TradingInformationPage() {
         state: stateValue,
         postcode: postcode,
       },
-      mobile,
+      applicantPhone: mobile,
     });
 
     // Mark step complete

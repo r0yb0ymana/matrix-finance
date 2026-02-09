@@ -172,6 +172,7 @@ export async function requireServerSession(): Promise<Session> {
   if (!session) {
     const { redirect } = await import('next/navigation');
     redirect('/login');
+    throw new Error('Redirecting'); // unreachable, satisfies TS
   }
 
   return session;
@@ -186,6 +187,7 @@ export async function requireServerStaffSession(): Promise<Session> {
   if (!session || !session.staff_user_id) {
     const { redirect } = await import('next/navigation');
     redirect('/staff/login');
+    throw new Error('Redirecting'); // unreachable, satisfies TS
   }
 
   return session;

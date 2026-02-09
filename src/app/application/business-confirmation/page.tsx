@@ -13,6 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useApplication } from "@/contexts/ApplicationContext";
+import { EntityType } from "@/types/database.types";
+
+const ENTITY_TYPE_MAP: Record<string, EntityType> = {
+  "Sole Trader": EntityType.SOLE_TRADER,
+  "Company": EntityType.COMPANY,
+  "Partnership": EntityType.PARTNERSHIP,
+  "Trust": EntityType.TRUST_INDIVIDUAL_TRUSTEE,
+};
 
 export default function BusinessConfirmationPage() {
   const router = useRouter();
@@ -29,7 +37,7 @@ export default function BusinessConfirmationPage() {
     if (!confirmed) return;
 
     updateState({
-      entityType,
+      entityType: ENTITY_TYPE_MAP[entityType] || EntityType.SOLE_TRADER,
     });
 
     markStepComplete(3);
