@@ -185,7 +185,7 @@ CREATE TABLE rate_bands (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   created_by UUID REFERENCES staff_users(id),
   CHECK (min_amount < max_amount),
-  CHECK (annual_rate > 0)
+  CHECK (annual_rate >= 0)
 );
 
 -- Available loan terms
@@ -650,11 +650,11 @@ CREATE TRIGGER sync_financial_position AFTER INSERT OR UPDATE ON financial_posit
 
 -- Insert default rate bands (as per spec)
 INSERT INTO rate_bands (min_amount, max_amount, annual_rate) VALUES
-  (5000.00, 20000.00, 0.1595),
-  (20000.01, 75000.00, 0.1165),
-  (75000.01, 150000.00, 0.1070),
-  (150000.01, 250000.00, 0.1030),
-  (250000.01, 500000.00, 0.0995);
+  (5000.00, 20000.00, 0.0000),
+  (20000.01, 75000.00, 0.0000),
+  (75000.01, 150000.00, 0.0000),
+  (150000.01, 250000.00, 0.0000),
+  (250000.01, 500000.00, 0.0000);
 
 -- Insert available loan terms
 INSERT INTO loan_terms (months, display_order) VALUES

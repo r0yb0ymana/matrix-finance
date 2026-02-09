@@ -17,6 +17,7 @@ import { ABNLookupResult } from '@/lib/abn-lookup';
 export interface ApplicationState {
   // Application ID (created when user starts application)
   applicationId?: string;
+  applicationNumber?: string;
 
   // Step 1: Product Selection & Calculator
   financeProduct?: 'chattel_mortgage' | 'rental_lease';

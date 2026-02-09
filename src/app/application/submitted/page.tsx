@@ -10,14 +10,17 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Check, Plus, LogOut } from "lucide-react";
+import { useApplication } from "@/contexts/ApplicationContext";
 
 export default function ApplicationSubmittedPage() {
   const router = useRouter();
+  const { state, resetState } = useApplication();
 
-  // Generate a reference number (in production would come from backend)
-  const referenceNumber = "MEF-2024-78542";
+  // Get reference number from context (set by submit API)
+  const referenceNumber = state.applicationNumber || "Pending";
 
   const handleStartNew = () => {
+    resetState();
     router.push("/application/product-selection");
   };
 

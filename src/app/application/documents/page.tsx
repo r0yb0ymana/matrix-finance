@@ -129,13 +129,28 @@ export default function DocumentsPage() {
     setError("");
 
     try {
-      // For now, just mark as complete and continue
-      // Real upload logic would go here
+      const formData = new FormData();
+      formData.append('driversLicenseFront', driversLicenseFront!);
+      formData.append('driversLicenseBack', driversLicenseBack!);
+      formData.append('medicareCard', medicareCard!);
+      formData.append('applicationId', 'temp');
+
+      const res = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
       updateState({
         documents: {
-          driversLicenseFront: driversLicenseFront?.name,
-          driversLicenseBack: driversLicenseBack?.name,
-          medicareCard: medicareCard?.name,
+          driversLicenseFront: data.data.driversLicenseFront,
+          driversLicenseBack: data.data.driversLicenseBack,
+          medicareCard: data.data.medicareCard,
         },
       });
 

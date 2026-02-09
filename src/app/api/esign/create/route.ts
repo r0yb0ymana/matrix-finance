@@ -101,10 +101,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<CreateSig
       `INSERT INTO esign_requests (
         application_id,
         signature_request_id,
-        signer_email,
+        signers,
+        signing_url,
         status
-      ) VALUES ($1, $2, $3, $4)`,
-      [applicationId, signatureRequestId, signerEmail, 'pending']
+      ) VALUES ($1, $2, $3, $4, $5)`,
+      [
+        applicationId,
+        signatureRequestId,
+        JSON.stringify([{ name: signerName, email: signerEmail }]),
+        signUrl,
+        'pending',
+      ]
     );
 
     return NextResponse.json({

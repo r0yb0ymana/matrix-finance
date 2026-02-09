@@ -20,11 +20,11 @@ export default function TradingInformationPage() {
   const fontInter = 'var(--font-inter), Inter, sans-serif';
 
   // Form state - prefilled from ABN lookup
-  const [streetAddress, setStreetAddress] = useState(state.businessAddress?.street || "Level 5, 123 Business Street");
-  const [city, setCity] = useState(state.businessAddress?.city || "Sydney");
+  const [streetAddress, setStreetAddress] = useState(state.businessAddress?.line1 || "Level 5, 123 Business Street");
+  const [city, setCity] = useState(state.businessAddress?.suburb || "Sydney");
   const [stateValue, setStateValue] = useState(state.businessAddress?.state || "NSW");
   const [postcode, setPostcode] = useState(state.businessAddress?.postcode || "2000");
-  const [mobile, setMobile] = useState(state.applicantMobile || "");
+  const [mobile, setMobile] = useState(state.applicantPhone || "");
   const [confirmed, setConfirmed] = useState(false);
 
   // Redirect if no ABN lookup (disabled for preview)
@@ -39,12 +39,12 @@ export default function TradingInformationPage() {
     
     updateState({
       businessAddress: {
-        street: streetAddress,
-        city: city,
+        line1: streetAddress,
+        suburb: city,
         state: stateValue,
         postcode: postcode,
       },
-      applicantMobile: mobile,
+      applicantPhone: mobile,
     });
     
     markStepComplete(3);

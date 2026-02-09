@@ -10,10 +10,13 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ArrowLeft, Lock } from "lucide-react";
+import { useApplication } from "@/contexts/ApplicationContext";
 
 export default function SignPage() {
   const router = useRouter();
+  const { state, updateState } = useApplication();
   const [dots, setDots] = useState("");
+  const [error, setError] = useState("");
 
   // Animate the dots
   useEffect(() => {
@@ -23,8 +26,39 @@ export default function SignPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // In production, this would redirect to HelloSign URL after a delay
-  // For demo purposes, we just show the loading state
+  // Call e-sign API and redirect
+  useEffect(() => {
+    const createSignatureRequest = async () => {
+      try {
+        const res = await fetch('/api/esign/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            applicationId: state.applicationId || 'temp',
+            signerName: `${state.applicantFirstName || 'Applicant'} ${state.applicantLastName || ''}`.trim(),
+            signerEmail: state.applicantEmail || 'applicant@example.com',
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.data) {
+          updateState({ signatureRequestId: data.data.signatureRequestId });
+          // In production, would redirect to data.data.signUrl
+          // For mock, navigate to submitted after a brief delay
+          setTimeout(() => {
+            router.push("/application/submitted");
+          }, 2000);
+        } else {
+          setError(data.error || 'Failed to create signature request');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'E-sign request failed');
+      }
+    };
+
+    createSignatureRequest();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = () => {
     router.back();
@@ -119,11 +153,11 @@ export default function SignPage() {
           
           <p style={{
             fontSize: '0.875rem',
-            color: '#6B7280',
+            color: error ? '#DC2626' : '#6B7280',
             margin: '0 0 1.5rem 0',
             fontFamily: 'var(--font-poppins), Poppins, sans-serif',
           }}>
-            Please wait{dots}
+            {error || `Please wait${dots}`}
           </p>
 
           {/* Secure Connection Badge */}

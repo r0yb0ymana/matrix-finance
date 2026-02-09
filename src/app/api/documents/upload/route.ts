@@ -156,9 +156,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
         `INSERT INTO documents (
           application_id,
           document_type,
-          file_name,
-          file_url,
-          file_size,
+          original_filename,
+          s3_url,
+          file_size_bytes,
           mime_type
         ) VALUES
           ($1, $2, $3, $4, $5, $6),

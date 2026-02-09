@@ -11,9 +11,14 @@ import { AppLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { useApplication } from "@/contexts/ApplicationContext";
 
+const PRODUCT_LABELS: Record<string, string> = {
+  chattel_mortgage: 'Chattel Mortgage',
+  rental_lease: 'Rental Lease',
+};
+
 export default function ReviewPage() {
   const router = useRouter();
-  const { state } = useApplication();
+  const { state, updateState } = useApplication();
 
   // Declaration checkboxes
   const [agreePrivacy, setAgreePrivacy] = useState(false);
@@ -23,19 +28,80 @@ export default function ReviewPage() {
 
   const allAgreed = agreePrivacy && agreeCreditCheck && agreeDeclaration;
 
+  const [submitError, setSubmitError] = useState("");
+
   const handleProceedToSigning = async () => {
     if (!allAgreed) return;
-    
+
     setProcessing(true);
-    setTimeout(() => {
+    setSubmitError("");
+
+    try {
+      const res = await fetch('/api/applications/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          abn: state.abn,
+          tradingName: state.tradingName,
+          businessName: state.businessName,
+          entityType: state.entityType || 'sole_trader',
+          businessAddress: state.businessAddress ? {
+            street: state.businessAddress.line1,
+            city: state.businessAddress.suburb,
+            state: state.businessAddress.state,
+            postcode: state.businessAddress.postcode,
+          } : undefined,
+          applicantFirstName: state.applicantFirstName,
+          applicantLastName: state.applicantLastName,
+          applicantEmail: state.applicantEmail,
+          applicantPhone: state.applicantPhone,
+          applicantDateOfBirth: state.applicantDateOfBirth,
+          residentialAddress: state.registeredAddress ? {
+            street: state.registeredAddress.line1,
+            city: state.registeredAddress.suburb,
+            state: state.registeredAddress.state,
+            postcode: state.registeredAddress.postcode,
+          } : undefined,
+          assets: state.assets ? {
+            homeValue: state.assets.homeValue,
+            investmentPropertyValue: state.assets.investmentProperty,
+            cashAtBank: state.assets.cashAtBank,
+            vehiclesValue: state.assets.vehicles,
+            homeContentsValue: state.assets.homeContents,
+            investmentsSharesValue: state.assets.investmentsShares,
+            otherAssetsValue: state.assets.otherAssets,
+          } : undefined,
+          liabilities: state.liabilities,
+          financeProduct: state.financeProduct,
+          invoiceAmount: state.invoiceAmount,
+          termMonths: state.termMonths,
+          monthlyPayment: state.monthlyPayment,
+          annualRate: state.annualRate,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Submission failed');
+      }
+
+      updateState({
+        applicationId: data.data.applicationId,
+        applicationNumber: data.data.applicationNumber,
+      });
+
       router.push("/application/sign");
-    }, 1000);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Failed to submit application');
+      setProcessing(false);
+    }
   };
 
   // Get product info from state or use defaults
-  const productName = state.selectedProduct?.name || "Chattel Mortgage";
-  const loanAmount = state.loanAmount || 50000;
-  const monthlyPayment = state.monthlyPayment || 1234.56;
+  const productName = PRODUCT_LABELS[state.financeProduct || ''] || "Chattel Mortgage";
+  const loanAmount = state.invoiceAmount || 50000;
+  const monthlyPayment = state.monthlyPayment || 0;
 
   // Calculate financial position
   const totalAssets = (
@@ -245,6 +311,20 @@ export default function ReviewPage() {
             </label>
           </div>
         </div>
+
+        {/* Error Message */}
+        {submitError && (
+          <div style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: '#FEF2F2',
+            border: '1px solid #FECACA',
+            borderRadius: '0.5rem',
+            color: '#DC2626',
+            fontSize: '0.875rem',
+          }}>
+            {submitError}
+          </div>
+        )}
 
         {/* Proceed to Signing Button */}
         <Button

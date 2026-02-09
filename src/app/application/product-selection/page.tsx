@@ -27,14 +27,31 @@ export default function ProductSelectionPage() {
   const [loanTerm, setLoanTerm] = useState(48);
   const [monthlyPayment, setMonthlyPayment] = useState(1094);
 
-  // Calculate payment when inputs change
+  // Annual rate from API
+  const [annualRate, setAnnualRate] = useState(0);
+
+  // Calculate payment via API when inputs change
   useEffect(() => {
-    // Simple calculation for demo - replace with actual API call
-    const rate = 0.08; // 8% annual rate
-    const monthlyRate = rate / 12;
-    const payment = (equipmentCost * monthlyRate * Math.pow(1 + monthlyRate, loanTerm)) / 
-                    (Math.pow(1 + monthlyRate, loanTerm) - 1);
-    setMonthlyPayment(Math.round(payment));
+    const controller = new AbortController();
+    const fetchPayment = async () => {
+      try {
+        const res = await fetch('/api/calculator/payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invoiceAmount: equipmentCost, termMonths: loanTerm }),
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        if (data.success && data.data?.monthlyPayment) {
+          setMonthlyPayment(Math.round(data.data.monthlyPayment));
+          setAnnualRate(data.data.annualRate);
+        }
+      } catch {
+        // Ignore abort errors
+      }
+    };
+    fetchPayment();
+    return () => controller.abort();
   }, [equipmentCost, loanTerm]);
 
   const handleContinue = () => {
@@ -43,6 +60,7 @@ export default function ProductSelectionPage() {
       invoiceAmount: equipmentCost,
       termMonths: loanTerm,
       monthlyPayment: monthlyPayment,
+      annualRate: annualRate,
     });
     markStepComplete(1);
     router.push("/application/business-lookup");
