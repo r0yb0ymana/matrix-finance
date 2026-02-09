@@ -110,17 +110,14 @@ async function handleApplicationStatusChange(data: FindeskWebhookEvent['data']):
     [applicationId, crmRecordId]
   );
 
-  console.log(`Updated application ${applicationId} status to ${localStatus} from CRM`);
 }
 
-async function handleLeadCreated(data: FindeskWebhookEvent['data']): Promise<void> {
-  // Handle lead created event if needed
-  console.log('Lead created in CRM:', data.id);
+async function handleLeadCreated(_data: FindeskWebhookEvent['data']): Promise<void> {
+  // Placeholder for lead created event handling
 }
 
-async function handleApplicationCreated(data: FindeskWebhookEvent['data']): Promise<void> {
-  // Handle application created in CRM (if created externally)
-  console.log('Application created in CRM:', data.id);
+async function handleApplicationCreated(_data: FindeskWebhookEvent['data']): Promise<void> {
+  // Placeholder for external application created handling
 }
 
 // =====================================================
@@ -145,11 +142,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<WebhookRe
     // Parse webhook payload
     const event: FindeskWebhookEvent = JSON.parse(bodyText);
 
-    console.log(`Received Findesk webhook: ${event.event}`, {
-      type: event.data.type,
-      id: event.data.id,
-    });
-
     // Handle different event types
     switch (event.event) {
       case 'application.status_changed':
@@ -165,12 +157,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<WebhookRe
         break;
 
       case 'lead.converted':
-        // Lead converted to application
-        console.log('Lead converted:', event.data.id);
         break;
 
       default:
-        console.log(`Unhandled webhook event: ${event.event}`);
+        console.warn(`Unhandled webhook event: ${event.event}`);
     }
 
     return NextResponse.json({

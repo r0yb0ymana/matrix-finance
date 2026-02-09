@@ -59,8 +59,8 @@ export default function ProductSelectionPage() {
       financeProduct: financeType as 'chattel_mortgage' | 'rental_lease',
       invoiceAmount: equipmentCost,
       termMonths: loanTerm,
-      monthlyPayment: monthlyPayment,
-      annualRate: annualRate,
+      monthlyPayment,
+      annualRate,
     });
     markStepComplete(1);
     router.push("/application/business-lookup");

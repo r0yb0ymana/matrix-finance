@@ -149,8 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
       ),
     ]);
 
-    // TODO: Save document records to database
-    // If applicationId is provided, link documents to application
+    // Save document records to database if linked to an application
     if (applicationId && applicationId !== 'temp') {
       await query(
         `INSERT INTO documents (

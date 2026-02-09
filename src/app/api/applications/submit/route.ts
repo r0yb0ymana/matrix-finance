@@ -224,10 +224,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<Applicati
       };
     });
 
-    // TODO: Send confirmation email
-    // TODO: Trigger CRM sync
-    // TODO: Create audit log entry
-
     return NextResponse.json({
       success: true,
       data: result,

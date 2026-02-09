@@ -30,8 +30,6 @@ interface WebhookResponse {
 async function handleConnectionCompleted(event: BankStatementsWebhookEvent): Promise<void> {
   const { connectionId, data } = event;
 
-  console.log(`Bank connection completed: ${connectionId}`);
-
   // Update connection status in database
   await query(
     `UPDATE bank_connections
@@ -52,8 +50,6 @@ async function handleConnectionCompleted(event: BankStatementsWebhookEvent): Pro
 
 async function handleConnectionExpired(event: BankStatementsWebhookEvent): Promise<void> {
   const { connectionId } = event;
-
-  console.log(`Bank connection expired: ${connectionId}`);
 
   // Update connection status in database
   await query(
@@ -81,15 +77,11 @@ async function handleConnectionFailed(event: BankStatementsWebhookEvent): Promis
 async function handleStatementsReady(event: BankStatementsWebhookEvent): Promise<void> {
   const { connectionId, data } = event;
 
-  console.log(`Bank statements ready for connection: ${connectionId}`);
-
   // Fetch the statements
   try {
     const result = await fetchStatements({ connectionId, months: 6 });
 
-    if (result.success && result.statements) {
-      console.log(`Retrieved ${result.statements.length} statements`);
-    }
+    // Statements fetched successfully
   } catch (error) {
     console.error('Failed to fetch statements after webhook:', error);
   }
@@ -119,10 +111,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<WebhookRe
     // Parse webhook payload
     const event: BankStatementsWebhookEvent = JSON.parse(bodyText);
 
-    console.log(`Received bank statements webhook: ${event.event}`, {
-      connectionId: event.connectionId,
-    });
-
     // Handle different event types
     switch (event.event) {
       case 'connection.completed':
@@ -142,11 +130,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<WebhookRe
         break;
 
       case 'statements.updated':
-        console.log('Statements updated:', event.connectionId);
         break;
 
       default:
-        console.log(`Unhandled webhook event: ${event.event}`);
+        console.warn(`Unhandled webhook event: ${event.event}`);
     }
 
     return NextResponse.json({

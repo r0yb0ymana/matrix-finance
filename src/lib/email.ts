@@ -51,8 +51,7 @@ async function sendViaResend(options: EmailOptions): Promise<void> {
     throw new Error(`Failed to send email: ${error.message || response.statusText}`);
   }
 
-  const data = await response.json();
-  console.log('✓ Email sent:', data.id);
+  await response.json();
 }
 
 /**

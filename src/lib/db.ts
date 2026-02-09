@@ -55,8 +55,6 @@ export function getPool(): Pool {
       console.error('Unexpected error on idle database client', err);
     });
 
-    // Log when pool is created
-    console.log('✓ Database connection pool created');
   }
 
   return pool;
@@ -87,8 +85,7 @@ export async function query<T extends QueryResultRow = any>(
     return result;
   } catch (error) {
     console.error('Database query error:', error);
-    console.error('Query:', text);
-    console.error('Params:', params);
+    console.error('Query:', text.substring(0, 200));
     throw error;
   }
 }
@@ -150,7 +147,6 @@ export async function closePool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;
-    console.log('✓ Database connection pool closed');
   }
 }
 
