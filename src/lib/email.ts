@@ -58,11 +58,10 @@ async function sendViaResend(options: EmailOptions): Promise<void> {
  * Send email (with fallback to console in development)
  */
 export async function sendEmail(options: EmailOptions): Promise<void> {
-  const isDevelopment = process.env.NODE_ENV === 'development';
   const useMock = process.env.USE_MOCK_EMAIL === 'true';
 
-  // In development, optionally log to console instead of sending
-  if (isDevelopment && useMock) {
+  // When mock mode is enabled, log to console instead of sending
+  if (useMock) {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('📧 MOCK EMAIL (Development Mode)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

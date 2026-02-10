@@ -17,7 +17,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState(["", "", "", ""]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(180);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Fonts
   const fontInter = 'var(--font-inter), Inter, sans-serif';
@@ -32,11 +34,29 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [showOtp, timer]);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    setShowOtp(true);
-    setTimer(60);
+    if (!email || loading) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to send code");
+        return;
+      }
+      setShowOtp(true);
+      setTimer(180);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -51,9 +71,28 @@ export default function LoginPage() {
       }
 
       if (newOtp.every((digit) => digit !== "") && index === 3) {
-        setTimeout(() => {
-          router.push("/application/product-selection");
-        }, 500);
+        const code = newOtp.join("");
+        setLoading(true);
+        setError("");
+        fetch("/api/auth/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, code }),
+        })
+          .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+          .then(({ ok, data }) => {
+            if (ok && data.success) {
+              router.push("/application/product-selection");
+            } else {
+              setError(data.error || "Invalid code");
+              setOtp(["", "", "", ""]);
+              document.getElementById("otp-0")?.focus();
+            }
+          })
+          .catch(() => {
+            setError("Network error. Please try again.");
+          })
+          .finally(() => setLoading(false));
       }
     }
   };
@@ -65,9 +104,24 @@ export default function LoginPage() {
     }
   };
 
-  const handleResendCode = () => {
-    setTimer(60);
-    setOtp(["", "", "", ""]);
+  const handleResendCode = async () => {
+    setError("");
+    try {
+      const res = await fetch("/api/auth/request-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to resend code");
+        return;
+      }
+      setTimer(180);
+      setOtp(["", "", "", ""]);
+    } catch {
+      setError("Network error. Please try again.");
+    }
   };
 
   // Styles
@@ -275,8 +329,14 @@ export default function LoginPage() {
 
                   <div style={styles.recaptcha}>reCAPTCHA</div>
 
-                  <button type="submit" style={styles.button}>
-                    Continue
+                  {error && (
+                    <p style={{ color: '#DC2626', fontSize: '0.875rem', textAlign: 'center', marginTop: '0.75rem' }}>
+                      {error}
+                    </p>
+                  )}
+
+                  <button type="submit" disabled={loading} style={{ ...styles.button, opacity: loading ? 0.7 : 1 }}>
+                    {loading ? "Sending..." : "Continue"}
                   </button>
                 </form>
 
@@ -312,7 +372,15 @@ export default function LoginPage() {
                   ))}
                 </div>
 
-                <p style={styles.timerText}>Code expires in {timer} seconds</p>
+                {error && (
+                  <p style={{ color: '#DC2626', fontSize: '0.875rem', textAlign: 'center', marginBottom: '0.75rem' }}>
+                    {error}
+                  </p>
+                )}
+
+                <p style={styles.timerText}>
+                  Code expires in {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}
+                </p>
 
                 <button
                   type="button"
